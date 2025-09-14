@@ -77,3 +77,5 @@ sudo docker run --rm -it -d -p 127.0.0.1:8080:80 vulnerables/web-dvwa:patched
 sudo docker pull bkimminich/juice-shop
 sudo docker run --rm -it -d -p 127.0.0.1:3000:3000 bkimminich/juice-shop
 ```
+docker update --restart unless-stopped awesome_khorana
+Error response from daemon: Cannot update container 351c2021cc58b0bf3e7c57b7f63fbb97ed09235ddaf7d5d01e7d19b01b5b4294: Restart policy cannot be updated because AutoRemove is enabled for the container
