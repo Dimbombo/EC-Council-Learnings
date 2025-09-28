@@ -1,0 +1,1 @@
+curl -s -c cookies.txt -d "username=admin&password=password&Login=Login" "http://127.0.0.1/dvwa/login.php" > /dev/null
