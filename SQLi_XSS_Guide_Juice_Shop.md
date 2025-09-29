@@ -104,3 +104,6 @@ This guide is for educational demo only. In your project, implement fixes in a f
 
 - Created: September 29, 2025
 - For: Web Application Security Project (WAS621S)
+
+
+hydra -l <username> -P <password_list> <ftp_server>
