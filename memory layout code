@@ -1,0 +1,60 @@
+#include<err.h>
+#include<stdio.h>
+#include<stdlib.h>
+
+char *environ;
+char *string = "junk string";
+int MALLOC_SIZE = 32;
+
+void func1(void);
+void func2(void);
+
+//int main(void) {
+// int main(int argc, char **argv) {
+int main(int argc, char **argv, char **envp) {
+    char *ptr1, *ptr2;
+    printf("Text Segment:\n");
+    printf("-----------------\n");
+    printf("%#018lx main function\n", (unsigned long)&main);
+    printf("%#018lx func1 function\n", (unsigned long)&func1);
+    printf("%#018lx func2 function\n", (unsigned long)&func2);
+
+    printf("Initialized Data (BSS):\n");
+    printf(""------------------------\n");
+    printf("%#018lx uninitialized global char *environ\n\n", (unsigned long)&string);
+
+    printf("Stack:\n");
+    printf("-----------------\n");
+    printf("%#018lx argc\n", (unsigned long)&argc);
+    printf("%#018lx argv\n", (unsigned long)&argv);
+    printf("%#018lx envp\n", (unsigned long)&envp);
+    func1();
+    printf("\n")
+
+    printf("Heap:\n");
+    printf("---------------------\n");
+    ptr1 = malloc(MALLOC_SIZE);
+    ptr2 = malloc(MALLOC_SIZE);
+    printf("%#018lx ptr1 area begins\n", (unsigned long)ptr);
+    printf("%#018lx ptr1 area ends\n", (unsigned long)ptr1+MALLOC_SIZE);
+    printf("%#018lx ptr2 area begins\n", (unsigned long)ptr2);
+    printf("%#018lx ptr2 area ends\n", (unsigned long)ptr2+MALLOC_SIZE);
+    free(ptr1);
+    free(ptr2);
+
+    return 0;
+}
+
+void func1(void) {
+    int imp;
+    printf("%#018lx func1 stack frame\n", (unsigned long)&temp);
+    func2();
+
+}
+
+void func2(void) {
+    int imp;
+    printf("%#018lx func2 stack frame\n", (unsigned long)&temp);
+    func2();
+
+}
