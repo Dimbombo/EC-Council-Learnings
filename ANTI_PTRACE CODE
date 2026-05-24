@@ -16,3 +16,17 @@ int main(){
 is attached to the process using ptrace with the PTRACE_TRACEME request. 
 If the call fails, it prints "Debugger Detected!" 
 and exits with an error. Otherwise, it prints "Normal Execution".
+
+
+######CODE 02:
+long ptrace(int request, int pid, void *addr, void *data){
+    return 0;
+}
+
+NB:  The code snippet defines a custom implementation of the ptrace function, 
+which always returns 0 regardless of the arguments provided. 
+This effectively overrides the system's ptrace call, 
+making any calls to ptrace in the program return 0, 
+thus hiding debugging attempts and preventing detection of debuggers. 
+This technique is used to bypass anti-debugging mechanisms.
+
