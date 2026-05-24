@@ -11,3 +11,8 @@ int main(){
     }
     return 0;
 }
+
+#Type the following code as shown. This code checks if a debugger 
+is attached to the process using ptrace with the PTRACE_TRACEME request. 
+If the call fails, it prints "Debugger Detected!" 
+and exits with an error. Otherwise, it prints "Normal Execution".
